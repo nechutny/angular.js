@@ -74,9 +74,17 @@ function stringifyFn(fn) {
   return Function.prototype.toString.call(fn);
 }
 
+function isClass(v) {
+  return typeof v === 'function' && /^\s*class\s+/.test(v.toString());
+}
+
 function extractArgs(fn) {
-  var fnText = stringifyFn(fn).replace(STRIP_COMMENTS, ''),
-      args = fnText.match(ARROW_ARG) || fnText.match(FN_ARGS);
+  var fnText = stringifyFn(fn).replace(STRIP_COMMENTS, '');
+  if(isClass(fn)) {
+	var constructorIndex = fnText.indexOf('constructor(');
+	fnText = fnText.substring(constructorIndex);
+  }
+  var args = fnText.match(ARROW_ARG) || fnText.match(FN_ARGS);
   return args;
 }
 
